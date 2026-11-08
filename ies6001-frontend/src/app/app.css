@@ -1,0 +1,995 @@
+/* ==========================================================================
+   IES 6001 - SISTEMA DE GESTIÓN Y RESERVA DE RECURSOS
+   HOJA DE ESTILOS PRINCIPAL Y SISTEMA DE DISEÑO
+   ========================================================================== */
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #f8fafc;
+  color: #1e293b;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #f8fafc;
+  color: #1e293b;
+  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/* ==========================================================================
+   TOPBAR & HEADER
+   ========================================================================== */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.9rem 2.2rem;
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 18px rgba(30, 64, 175, 0.18);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  color: #1d4ed8;
+  font-weight: 900;
+  font-size: 1.25rem;
+}
+
+.brand-wrap strong {
+  display: block;
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.brand-wrap small {
+  display: block;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.main-nav a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.main-nav a.active,
+.main-nav a:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
+.logout-btn {
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border-radius: 10px;
+  padding: 0.6rem 1.15rem;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: #ffffff;
+  color: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.app-shell {
+  padding: 2.2rem 2rem;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   PANTALLA DE ACCESO / LOGIN (Campos bordeados, redondeados y profesionales)
+   ========================================================================== */
+
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem 1.5rem;
+  background: radial-gradient(circle at 50% 20%, #eff6ff 0%, #e2e8f0 100%);
+}
+
+.auth-card {
+  width: min(100%, 460px);
+  padding: 2.8rem 2.4rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 26px;
+  box-shadow:
+    0 25px 50px -12px rgba(15, 23, 42, 0.15),
+    0 0 0 1px rgba(15, 23, 42, 0.04);
+}
+
+.auth-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.auth-brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.9rem;
+}
+
+.brand-letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  background: #2563eb;
+  color: #ffffff;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.auth-header h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.45rem;
+}
+
+.auth-header p {
+  color: #64748b;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.field-label {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #334155;
+  letter-spacing: 0.02em;
+}
+
+/* Campos de entrada: más bordeados, esquinas curvas profesionales (no puntas) */
+input[type='text'],
+input[type='email'],
+input[type='password'],
+.rounded-input,
+.form-input {
+  width: 100%;
+  min-height: 3.2rem;
+  padding: 0.85rem 1.15rem;
+  border: 2px solid #cbd5e1 !important;
+  border-radius: 14px !important;
+  font-size: 0.96rem;
+  color: #0f172a;
+  background-color: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+input[type='text']:focus,
+input[type='email']:focus,
+input[type='password']:focus,
+.rounded-input:focus,
+.form-input:focus {
+  outline: none !important;
+  border-color: #2563eb !important;
+  box-shadow:
+    0 0 0 4px rgba(37, 99, 235, 0.16),
+    0 2px 6px rgba(15, 23, 42, 0.06) !important;
+  background-color: #ffffff !important;
+}
+
+input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.auth-submit-btn,
+.primary-btn {
+  margin-top: 0.5rem;
+  min-height: 3.2rem;
+  padding: 0.85rem 1.5rem;
+  border-radius: 14px !important;
+  font-size: 0.98rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.32);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.auth-submit-btn:hover:not([disabled]),
+.primary-btn:hover:not([disabled]) {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.42);
+}
+
+.auth-submit-btn:disabled,
+.primary-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ==========================================================================
+   PANEL PRINCIPAL / DASHBOARD
+   Tarjetas de presentación con amplio espacio para números y estilo llamativo
+   ========================================================================== */
+
+.page-panel {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+  padding: 2.2rem;
+  margin-bottom: 2rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.8rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.eyebrow {
+  margin: 0 0 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  color: #2563eb;
+  font-weight: 800;
+}
+
+.page-header h2 {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.03em;
+}
+
+/* Grid de tarjetas de presentación */
+.presentation-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.2rem;
+}
+
+.presentation-stat-card {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 22px;
+  padding: 1.8rem 1.7rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.presentation-stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 35px -8px rgba(15, 23, 42, 0.12);
+}
+
+/* Tarjeta: Recursos (Tema Azul Eléctrico) */
+.card-recursos {
+  background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%);
+  border: 2px solid #93c5fd;
+  box-shadow: 0 12px 28px -6px rgba(37, 99, 235, 0.14);
+}
+
+.card-recursos .pcard-chip {
+  background: #bfdbfe;
+  color: #1e3a8a;
+  border: 1px solid #93c5fd;
+}
+
+.card-recursos .pcard-number {
+  color: #1e40af;
+}
+
+/* Tarjeta: Reservas (Tema Púrpura / Índigo) */
+.card-reservas {
+  background: linear-gradient(145deg, #faf5ff 0%, #ede9fe 50%, #ddd6fe 100%);
+  border: 2px solid #c4b5fd;
+  box-shadow: 0 12px 28px -6px rgba(124, 58, 237, 0.14);
+}
+
+.card-reservas .pcard-chip {
+  background: #ddd6fe;
+  color: #4c1d95;
+  border: 1px solid #c4b5fd;
+}
+
+.card-reservas .pcard-number {
+  color: #6d28d9;
+}
+
+/* Tarjeta: Usuario (Tema Esmeralda / Jade) */
+.card-usuario {
+  background: linear-gradient(145deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%);
+  border: 2px solid #86efac;
+  box-shadow: 0 12px 28px -6px rgba(22, 163, 74, 0.14);
+}
+
+.card-usuario .pcard-chip {
+  background: #bbf7d0;
+  color: #064e3b;
+  border: 1px solid #86efac;
+}
+
+.card-usuario .pcard-user-name {
+  color: #14532d;
+}
+
+.pcard-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pcard-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pcard-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.pcard-metric {
+  margin: 1.2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.pcard-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #475569;
+}
+
+/* Números con amplio espacio y estilo llamativo */
+.pcard-number {
+  font-size: clamp(3.2rem, 5vw, 4rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.pcard-user-name {
+  font-size: clamp(1.5rem, 2.5vw, 1.9rem);
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  word-break: break-word;
+}
+
+.pcard-desc {
+  font-size: 0.88rem;
+  color: #334155;
+  margin-bottom: 0.9rem;
+  font-weight: 500;
+}
+
+.pcard-bottom {
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.pcard-status {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+/* ==========================================================================
+   AVISOS Y TARJETAS DE RESERVAS
+   Tarjeta ROJA cuando el recurso está OCUPADO
+   ========================================================================== */
+
+.list-panel {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 1.8rem;
+}
+
+.list-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.4rem;
+}
+
+.list-panel-header h3 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.panel-subtitle {
+  font-size: 0.86rem;
+  color: #64748b;
+  margin-top: 0.2rem;
+}
+
+.count-badge {
+  background: #e2e8f0;
+  color: #334155;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.reservation-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.3rem;
+}
+
+/* Estilo base de tarjeta de reserva */
+.reservation-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.4rem 1.5rem;
+  border-radius: 20px;
+  border: 2px solid #e2e8f0;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.reservation-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+}
+
+/* ==========================================================================
+   AVISO DE RESERVA CON RECURSO OCUPADO: TARJETA DE COLOR ROJA
+   ========================================================================== */
+
+.reservation-card.card-occupied {
+  background: linear-gradient(145deg, #fff1f2 0%, #fee2e2 50%, #fecaca 100%) !important;
+  border: 2px solid #ef4444 !important;
+  border-left: 8px solid #dc2626 !important;
+  box-shadow:
+    0 14px 32px -4px rgba(239, 68, 68, 0.28),
+    0 0 0 1px rgba(220, 38, 38, 0.15) !important;
+}
+
+.occupied-banner {
+  background: #dc2626;
+  color: #ffffff;
+  padding: 0.45rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
+}
+
+.pulse-indicator {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  animation: pulse-dot 1.5s infinite;
+}
+
+@keyframes pulse-dot {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.8);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 7px rgba(255, 255, 255, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.card-occupied .reserva-number {
+  color: #991b1b !important;
+  font-weight: 900;
+}
+
+.card-occupied .card-label {
+  color: #b91c1c !important;
+  font-weight: 800;
+}
+
+.card-occupied .item-name {
+  color: #7f1d1d !important;
+  font-weight: 800;
+}
+
+.card-occupied .date-range {
+  color: #7f1d1d !important;
+}
+
+.card-occupied .card-meta {
+  color: #991b1b !important;
+  border-top-color: rgba(220, 38, 38, 0.25) !important;
+}
+
+/* Badge rojo para estados ocupados */
+.badge-danger {
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+  border: 1.5px solid #f87171 !important;
+  font-weight: 800 !important;
+}
+
+/* Elementos internos de las tarjetas de reserva */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.reserva-number {
+  color: #0f172a;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  border: 1px solid #93c5fd;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.card-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.card-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 800;
+}
+
+.item-name {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.date-range {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.arrow-sep {
+  color: #94a3b8;
+  font-weight: 800;
+}
+
+.card-meta {
+  font-size: 0.82rem;
+  color: #1d4ed8;
+  font-weight: 700;
+  padding-top: 0.6rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.empty-text {
+  color: #64748b;
+  font-size: 0.95rem;
+  padding: 1rem 0;
+}
+
+/* ==========================================================================
+   PANTALLA DE GESTIÓN / RESERVAS
+   Campos de fecha y hora con bordes bien definidos y redondeados
+   ========================================================================== */
+
+.resource-form {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 22px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.form-title-wrap {
+  margin-bottom: 1.5rem;
+}
+
+.form-title-wrap h3 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 0.25rem;
+}
+
+.form-subtitle {
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+.datetime-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.3rem;
+  margin-bottom: 1.5rem;
+}
+
+.datetime-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1e293b;
+  display: block;
+}
+
+/* Campos de Fecha y Hora: Bordes BIEN DEFINIDOS y Redondeados */
+.datetime-input-defined,
+input[type='datetime-local'] {
+  width: 100%;
+  min-height: 3.4rem;
+  padding: 0.85rem 1.15rem;
+  border: 2.5px solid #2563eb !important; /* Borde bien definido con alto contraste */
+  border-radius: 14px !important;       /* Redondeado suave y profesional */
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #0f172a;
+  background-color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.1) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.datetime-input-defined:focus,
+input[type='datetime-local']:focus {
+  outline: none !important;
+  border-color: #1d4ed8 !important;
+  box-shadow:
+    0 0 0 4px rgba(37, 99, 235, 0.24),
+    0 4px 10px rgba(15, 23, 42, 0.08) !important;
+}
+
+/* Selector de Recursos en forma de chips interactivos redondeados */
+.resources-selector-section {
+  margin-bottom: 1.5rem;
+}
+
+.checkbox-cards-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.85rem;
+  margin-top: 0.6rem;
+}
+
+.resource-checkbox-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1.1rem;
+  border: 2px solid #cbd5e1;
+  border-radius: 14px;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.resource-checkbox-card:hover {
+  border-color: #93c5fd;
+  background-color: #f8fafc;
+}
+
+.resource-checkbox-card.selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.16);
+}
+
+.resource-checkbox-card input[type='checkbox'] {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+.checkbox-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.checkbox-content strong {
+  font-size: 0.92rem;
+  color: #0f172a;
+}
+
+.checkbox-content small {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+/* Botón de acción para reservas */
+.submit-action-btn {
+  width: 100%;
+  min-height: 3.3rem;
+  padding: 0.9rem 1.8rem;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+  transition: all 0.2s ease;
+}
+
+.submit-action-btn:hover:not([disabled]) {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(37, 99, 235, 0.45);
+}
+
+.submit-action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ==========================================================================
+   ALERTAS
+   ========================================================================== */
+
+.alert {
+  border-radius: 14px;
+  padding: 0.95rem 1.2rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.alert.error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1.5px solid #f87171;
+}
+
+.alert.success {
+  background: #dcfce7;
+  color: #166534;
+  border: 1.5px solid #86efac;
+}
+
+/* ==========================================================================
+   PANTALLA DE RECURSOS (Inventario)
+   ========================================================================== */
+
+select,
+textarea {
+  width: 100%;
+  padding: 0.85rem 1.15rem;
+  border: 2px solid #cbd5e1;
+  border-radius: 14px;
+  font-size: 0.96rem;
+  color: #0f172a;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.16);
+}
+
+textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.row-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.row-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  padding: 1.2rem 1.4rem;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+  transition: all 0.2s ease;
+}
+
+.row-item:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+}
+
+.row-item strong {
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.row-item p {
+  color: #64748b;
+  font-size: 0.86rem;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .main-nav {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .app-shell {
+    padding: 1.2rem 1rem;
+  }
+
+  .auth-card {
+    padding: 2rem 1.4rem;
+  }
+
+  .pcard-number {
+    font-size: 2.8rem;
+  }
+
+  .datetime-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .row-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
