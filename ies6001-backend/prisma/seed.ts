@@ -15,6 +15,31 @@ async function main() {
   for (const name of reservationStatuses)
     await prisma.statusReservation.upsert({ where: { name }, update: {}, create: { name } });
 
+  const statusDisponible = await prisma.statusResource.findUniqueOrThrow({ where: { name: 'Disponible' } });
+  const categoryProyector = await prisma.category.findUniqueOrThrow({ where: { name: 'Proyector' } });
+  const categoryNotebook = await prisma.category.findUniqueOrThrow({ where: { name: 'Notebook' } });
+  const categorySalon = await prisma.category.findUniqueOrThrow({ where: { name: 'Salón' } });
+
+  const demoResources = [
+    { name: 'Proyector Epson', marca: 'Epson', description: 'Proyector para aulas y presentaciones', statusId: statusDisponible.id, categoryId: categoryProyector.id },
+    { name: 'Notebook Dell Latitude', marca: 'Dell', description: 'Notebook para clases y trabajos prácticos', statusId: statusDisponible.id, categoryId: categoryNotebook.id },
+    { name: 'Notebook Lenovo ThinkPad', marca: 'Lenovo', description: 'Equipo portátil de alto rendimiento', statusId: statusDisponible.id, categoryId: categoryNotebook.id },
+    { name: 'Aula Multimedia 1', marca: 'IES6001', description: 'Salón con equipamiento audiovisual', statusId: statusDisponible.id, categoryId: categorySalon.id },
+  ];
+
+  for (const resource of demoResources) {
+    const existing = await prisma.resource.findFirst({
+      where: {
+        name: resource.name,
+        marca: resource.marca ?? null,
+      },
+    });
+
+    if (!existing) {
+      await prisma.resource.create({ data: resource });
+    }
+  }
+
   // Admin inicial
   const person = await prisma.person.upsert({
     where: { dni: '00000000' },
