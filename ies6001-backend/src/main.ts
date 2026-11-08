@@ -7,9 +7,11 @@ import { PrismaExceptionFilter } from './common/prisma-exception.filter.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors({ origin: ['http://localhost:5173'] });
-  app.enableCors({ origin: ['http://localhost:4200'] });
-
+  app.enableCors({
+    origin: ['http://localhost:4200', 'http://localhost:5173'],
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    credentials: true,
+  });
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalFilters(new PrismaExceptionFilter());
