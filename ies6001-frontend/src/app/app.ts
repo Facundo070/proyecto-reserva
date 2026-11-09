@@ -123,6 +123,16 @@ export class App {
             }
           </button>
         </form>
+        <div class="support-box">
+  <div>
+    <strong>¿Problemas para ingresar?</strong>
+    <small>Contacte con soporte técnico institucional.</small>
+  </div>
+
+  <a href="#" class="support-link">
+    Soporte TI →
+  </a>
+</div>
       </div>
     </section>
   `,
