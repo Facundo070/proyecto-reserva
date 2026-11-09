@@ -37,14 +37,42 @@ export class App {
   template: `
     <section class="auth-shell">
       <div class="auth-card">
-        <div class="auth-header">
-          <div class="auth-brand-badge">
-            <span class="brand-letter">I</span>
-            <span>IES 6001</span>
-          </div>
-          <h1>Acceso al sistema</h1>
-          <p>Ingresá tus credenciales para gestionar recursos y reservas institucionales.</p>
-        </div>
+        <div class="portal-header">
+  <span>Portal de Gestión Institucional</span>
+
+  <span class="status-online">
+    ● Sistema en línea
+  </span>
+</div>
+
+<div class="auth-header">
+  <div class="auth-brand-badge">
+    <span class="brand-letter">I</span>
+    <span>IES 6001</span>
+  </div>
+
+  <h1>Acceso al sistema</h1>
+
+  <p>
+    Ingresá tus credenciales para gestionar recursos y reservas institucionales.
+  </p>
+</div>
+
+<div class="role-selector">
+  <button type="button" class="role-btn active">
+    Docente
+  </button>
+
+  <button type="button" class="role-btn">
+    Administrador
+  </button>
+</div>
+
+<div class="login-info">
+  Acceso regular para estudiantes, docentes y alumnos.
+</div>
+
+
 
         <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
           <label class="form-field-group">
@@ -70,6 +98,18 @@ export class App {
               />
             </div>
           </label>
+
+<div class="remember-row">
+  <label class="remember-label">
+    <input type="checkbox" />
+    <span>Recordar sesión</span>
+  </label>
+
+  <a href="#" class="forgot-link">
+    ¿Olvidó su contraseña?
+  </a>
+</div>
+
 
           @if (error()) {
             <div class="alert error">{{ error() }}</div>
