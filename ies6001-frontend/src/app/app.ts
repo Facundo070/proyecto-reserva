@@ -59,43 +59,88 @@ export class App {
 </div>
 
 <div class="role-selector">
-  <button type="button" class="role-btn active">
+  <button
+    type="button"
+    class="role-btn"
+    [class.active]="selectedRole() === 'DOCENTE'"
+    (click)="selectedRole.set('DOCENTE')"
+  >
     Docente
   </button>
 
-  <button type="button" class="role-btn">
+  <button
+    type="button"
+    class="role-btn"
+    [class.active]="selectedRole() === 'ADMIN'"
+    (click)="selectedRole.set('ADMIN')"
+  >
     Administrador
   </button>
 </div>
 
-<div class="login-info">
-  Acceso regular para estudiantes, docentes y alumnos.
-</div>
 
+<div class="login-info">
+
+  @if (selectedRole() === 'DOCENTE') {
+
+    <strong>📚 Docente</strong>
+
+    <ul>
+      <li>Reservar recursos institucionales</li>
+      <li>Consultar disponibilidad</li>
+      <li>Gestionar solicitudes realizadas</li>
+    </ul>
+
+  } @else {
+
+    <strong>🛠️ Administrador</strong>
+
+    <ul>
+      <li>Gestionar recursos</li>
+      <li>Aprobar reservas</li>
+      <li>Administrar usuarios</li>
+    </ul>
+
+  }
+
+</div>
 
 
         <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
           <label class="form-field-group">
             <span class="field-label">Correo electrónico</span>
-            <div class="input-wrap">
-              <input
-                formControlName="email"
-                type="email"
-                placeholder="correo@ejemplo.com"
-                class="form-input rounded-input"
-              />
-            </div>
+            <div class="input-wrap icon-input">
+  
+
+  <input
+    formControlName="email"
+    type="email"
+    placeholder="correo@ejemplo.com"
+    class="form-input rounded-input"
+  />
+</div>
           </label>
 
           <label class="form-field-group">
             <span class="field-label">Contraseña</span>
             <div class="input-wrap">
-              <input
-                formControlName="password"
-                type="password"
-                placeholder="••••••••"
-                class="form-input rounded-input"
-              />
+             <div class="password-wrapper">
+             
+  <input
+    formControlName="password"
+    [type]="showPassword() ? 'text' : 'password'"
+    placeholder="••••••••"
+    class="form-input rounded-input"
+  />
+
+  <button
+    type="button"
+    class="toggle-password-btn"
+    (click)="showPassword.set(!showPassword())"
+  >
+    {{ showPassword() ? 'Ocultar' : 'Mostrar' }}
+  </button>
+</div>
             </div>
           </label>
 
@@ -148,6 +193,8 @@ export class LoginPage {
 
   readonly error = signal<string>('');
   readonly loading = signal(false);
+  readonly showPassword = signal(false);
+  readonly selectedRole = signal<'DOCENTE' | 'ADMIN'>('DOCENTE');
 
   submit(): void {
     if (this.form.invalid) {
