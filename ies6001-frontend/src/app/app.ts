@@ -53,9 +53,13 @@ export class App {
 
   <h1>Acceso al sistema</h1>
 
-  <p>
-    Ingresá tus credenciales para gestionar recursos y reservas institucionales.
-  </p>
+<p class="institution-name">
+  Sistema de Gestión y Reserva de Recursos
+</p>
+
+<p>
+  Ingresá tus credenciales para gestionar recursos y reservas institucionales.
+</p>
 </div>
 
 <div class="role-selector">
@@ -227,11 +231,22 @@ export class LoginPage {
   template: `
     <section class="page-panel">
       <div class="page-header">
-        <div>
-          <p class="eyebrow">Resumen Institucional</p>
-          <h2>Panel principal</h2>
-        </div>
-      </div>
+
+  <div>
+    <p class="eyebrow">Resumen Institucional</p>
+
+    <h2>Panel principal</h2>
+
+    <p class="dashboard-subtitle">
+      Bienvenido, {{ auth.user()?.name }}
+    </p>
+  </div>
+
+  <button class="dashboard-action-btn">
+    + Nueva Reserva
+  </button>
+
+</div>
 
       @if (loading()) {
         <div class="loading-state">
@@ -298,9 +313,29 @@ export class LoginPage {
             <span class="count-badge">{{ reservations().length }} registradas</span>
           </div>
 
-          @if (reservations().length === 0) {
-            <p class="empty-text">No hay reservas registradas en el sistema.</p>
-          } @else {
+         @if (reservations().length === 0) {
+  <div class="empty-state">
+
+    <div class="empty-icon">
+      📅
+    </div>
+
+    <h4>Sin reservas registradas</h4>
+
+    <p>
+      Todavía no existen reservas en el sistema.
+    </p>
+
+    <button
+      class="empty-action-btn"
+      (click)="router.navigateByUrl('/reservations')"
+    >
+      Crear primera reserva
+    </button>
+
+  </div>
+}
+ @else {
             <div class="reservation-cards-grid">
               @for (reservation of reservations(); track reservation.id) {
                 <!-- Tarjeta con estilo de color rojo si el recurso está ocupado -->
@@ -354,6 +389,7 @@ export class DashboardPage implements OnInit {
   protected readonly formatDate = formatDate;
   protected readonly getReservationItems = getReservationItems;
   protected readonly isOccupied = isOccupied;
+  protected readonly router = inject(Router);
 
   ngOnInit(): void {
     this.load();

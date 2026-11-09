@@ -339,12 +339,12 @@ input::placeholder {
 .presentation-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2.2rem;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
 }
 
 .presentation-stat-card {
-  min-height: 220px;
+  min-height: 180px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -450,7 +450,7 @@ input::placeholder {
 
 /* Números con amplio espacio y estilo llamativo */
 .pcard-number {
-  font-size: clamp(3.2rem, 5vw, 4rem);
+  font-size: clamp(2.6rem, 4vw, 3.2rem);
   font-weight: 900;
   line-height: 1;
   letter-spacing: -0.04em;
@@ -1127,4 +1127,88 @@ textarea {
 
 .login-info li {
   margin-bottom: .25rem;
+}
+.institution-name {
+  margin-bottom: .5rem;
+  font-size: .95rem;
+  font-weight: 700;
+  color: #2563eb;
+}
+.dashboard-subtitle {
+  margin-top: 0.5rem;
+  color: #64748b;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.dashboard-action-btn {
+  border: none;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+
+  padding: 0.85rem 1.4rem;
+
+  border-radius: 12px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+
+  transition: all 0.2s ease;
+}
+
+.dashboard-action-btn:hover {
+  transform: translateY(-2px);
+}.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state h4 {
+  font-size: 1.2rem;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  color: #64748b;
+  max-width: 450px;
+  margin: 0 auto;
+}
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.empty-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state h4 {
+  color: #0f172a;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  color: #64748b;
+  margin-bottom: 1.5rem;
+}
+
+.empty-action-btn {
+  border: none;
+  background: #2563eb;
+  color: white;
+  padding: 0.85rem 1.4rem;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
 }
