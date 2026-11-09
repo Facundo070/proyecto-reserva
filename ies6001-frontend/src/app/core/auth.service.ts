@@ -140,7 +140,9 @@ deleteResource(id: number) {
   cancelReservation(id: number) {
     return this.http.patch<Reservation>(`${this.baseUrl}/reservations/${id}/cancel`, {});
   }
-
+getUsers() {
+  return this.http.get<any[]>(`${this.baseUrl}/users`);
+}
   private readUser(): AuthUser | null {
     try {
       const raw = this.storage?.getItem('user');

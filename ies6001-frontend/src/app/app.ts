@@ -289,6 +289,7 @@ export class LoginPage {
 
           <!-- Tarjeta de presentación: Usuario -->
           <article class="presentation-stat-card card-usuario">
+            
             <div class="pcard-top">
               <span class="pcard-chip">Sesión Activa</span>
               <span class="pcard-icon">👤</span>
@@ -302,8 +303,33 @@ export class LoginPage {
               <span class="pcard-status">● Conectado actualmente</span>
             </div>
           </article>
-        </div>
+          <article class="presentation-stat-card card-docentes">
 
+  <div class="pcard-top">
+    <span class="pcard-chip">Docentes</span>
+    <span class="pcard-icon">👨‍🏫</span>
+  </div>
+
+  <div class="pcard-metric">
+    <span class="pcard-title">Docentes</span>
+    <strong class="pcard-number">
+      {{ teachersCount() }}
+    </strong>
+  </div>
+
+  <p class="pcard-desc">
+    Profesores registrados en el sistema
+  </p>
+
+  <div class="pcard-bottom">
+    <span class="pcard-status">
+      ● Usuarios activos
+    </span>
+  </div>
+
+</article>
+        </div>
+        
         <div class="list-panel">
           <div class="list-panel-header">
             <div>
@@ -385,6 +411,10 @@ export class DashboardPage implements OnInit {
   readonly loading = signal(true);
   readonly resources = signal<Resource[]>([]);
   readonly reservations = signal<Reservation[]>([]);
+  readonly users = signal<any[]>([]);
+  readonly teachersCount = computed(() => this.users().length);
+
+
 
   protected readonly formatDate = formatDate;
   protected readonly getReservationItems = getReservationItems;
@@ -398,17 +428,24 @@ export class DashboardPage implements OnInit {
   private load(): void {
     this.loading.set(true);
 
-    forkJoin({
-      resources: this.auth.getResources(),
-      reservations: this.auth.getReservations(),
-    }).subscribe({
-      next: ({ resources, reservations }) => {
-        this.resources.set(resources);
-        this.reservations.set(reservations);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
+   forkJoin({
+  resources: this.auth.getResources(),
+  reservations: this.auth.getReservations(),
+  users: this.auth.getUsers(),
+}).subscribe({
+  next: ({ resources, reservations, users }) => {
+    
+    this.resources.set(resources);
+    this.reservations.set(reservations);
+    this.users.set(users);
+    this.loading.set(false);
+  },
+
+  error: (err) => {
+    console.error('ERROR USERS', err);
+    this.loading.set(false);
+  },
+});
   }
 }
 @Component({

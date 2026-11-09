@@ -1212,3 +1212,26 @@ textarea {
   font-weight: 700;
   cursor: pointer;
 }
+.card-docentes {
+  background: linear-gradient(
+    145deg,
+    #fefce8 0%,
+    #fef3c7 50%,
+    #fde68a 100%
+  );
+
+  border: 2px solid #fcd34d;
+
+  box-shadow:
+    0 12px 28px -6px rgba(245, 158, 11, 0.14);
+}
+
+.card-docentes .pcard-chip {
+  background: #fde68a;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.card-docentes .pcard-number {
+  color: #b45309;
+}
