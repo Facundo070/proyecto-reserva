@@ -4,6 +4,8 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { AuthService, CatalogsResponse, Reservation, Resource } from './core/auth.service';
+import { canCancel, formatDate, getReservationItems, isOccupied } from './core/reservation.utils';
+
 
 @Component({
   selector: 'app-root',
@@ -51,7 +53,7 @@ export class App {
               <input
                 formControlName="email"
                 type="email"
-                placeholder="admin@ies6001.edu.ar"
+                placeholder="correo@ejemplo.com"
                 class="form-input rounded-input"
               />
             </div>
@@ -90,8 +92,8 @@ export class LoginPage {
   private readonly router = inject(Router);
 
   readonly form = new FormGroup({
-    email: new FormControl('admin@ies6001.edu.ar', { nonNullable: true, validators: [Validators.required, Validators.email] }),
-    password: new FormControl('Cambiar123!', { nonNullable: true, validators: [Validators.required] }),
+  email: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] }),
+  password: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   });
 
   readonly error = signal<string>('');
@@ -252,6 +254,10 @@ export class DashboardPage implements OnInit {
   readonly resources = signal<Resource[]>([]);
   readonly reservations = signal<Reservation[]>([]);
 
+  protected readonly formatDate = formatDate;
+  protected readonly getReservationItems = getReservationItems;
+  protected readonly isOccupied = isOccupied;
+
   ngOnInit(): void {
     this.load();
   }
@@ -271,35 +277,7 @@ export class DashboardPage implements OnInit {
       error: () => this.loading.set(false),
     });
   }
-
-  protected formatDate(value: string): string {
-    return new Date(value).toLocaleString('es-AR', { dateStyle: 'medium', timeStyle: 'short' });
-  }
-
-  protected getReservationItems(reservation: Reservation): string {
-    return reservation.resources?.map((item) => item.resource?.name ?? 'Sin nombre').join(', ') || 'Sin elementos';
-  }
-
-  protected isOccupied(reservation: Reservation): boolean {
-    const status = (reservation.status?.name ?? '').toLowerCase();
-    if (status.includes('ocupad') || status.includes('curso') || status.includes('aprobada')) {
-      return true;
-    }
-    const now = Date.now();
-    const start = new Date(reservation.startDate).getTime();
-    const end = new Date(reservation.endDate).getTime();
-    if (!isNaN(start) && !isNaN(end) && now >= start && now <= end && status !== 'cancelada' && status !== 'finalizada') {
-      return true;
-    }
-    return (
-      reservation.resources?.some((r) => {
-        const rStatus = (r.resource?.status?.name ?? '').toLowerCase();
-        return rStatus.includes('ocupad') || rStatus.includes('mantenimiento') || rStatus.includes('fuera');
-      }) ?? false
-    );
-  }
 }
-
 @Component({
   selector: 'app-resources-page',
   standalone: true,
@@ -337,6 +315,7 @@ export class DashboardPage implements OnInit {
             <label>
               <span>Estado</span>
               <select formControlName="statusId">
+                <option [ngValue]="null">Seleccionar</option>
                 @for (status of catalog()?.resourceStatuses ?? []; track status.id) {
                   <option [ngValue]="status.id">{{ status.name }}</option>
                 }
@@ -353,8 +332,14 @@ export class DashboardPage implements OnInit {
         </form>
       }
 
+      @if (feedback()) {
+        <div class="alert" [class.success]="feedbackType() === 'success'" [class.error]="feedbackType() === 'error'">
+          {{ feedback() }}
+        </div>
+      }
+
       <div class="list-panel">
-        <h3>Recursos disponibles</h3>
+        <h3>Recursos</h3>
         @if (resources().length === 0) {
           <p>No hay recursos cargados.</p>
         } @else {
@@ -364,10 +349,24 @@ export class DashboardPage implements OnInit {
                 <div>
                   <strong>{{ resource.name }}</strong>
                   <p>{{ resource.category?.name ?? 'Sin categoría' }}</p>
-                </div>
-                <div>
-                  <span class="badge">{{ resource.status?.name ?? 'Sin estado' }}</span>
                   <small>{{ resource.marca ?? 'Sin marca' }}</small>
+                </div>
+                <div class="resource-actions">
+                  @if (auth.isAdmin()) {
+                    <select
+                      aria-label="Cambiar estado del recurso"
+                      (change)="changeStatus(resource, $event)"
+                    >
+                      @for (status of catalog()?.resourceStatuses ?? []; track status.id) {
+                        <option [value]="status.id" [selected]="status.id === resource.statusId">
+                          {{ status.name }}
+                        </option>
+                      }
+                    </select>
+                    <button type="button" (click)="remove(resource)">Eliminar</button>
+                  } @else {
+                    <span class="badge">{{ resource.status?.name ?? 'Sin estado' }}</span>
+                  }
                 </div>
               </article>
             }
@@ -382,12 +381,14 @@ export class ResourcesPage implements OnInit {
   readonly resources = signal<Resource[]>([]);
   readonly catalog = signal<CatalogsResponse | null>(null);
   readonly loading = signal(false);
+  readonly feedback = signal('');
+  readonly feedbackType = signal<'success' | 'error'>('success');
 
   readonly form = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     marca: new FormControl('', { nonNullable: true }),
-    categoryId: new FormControl<number | null>(null),
-    statusId: new FormControl(1, { nonNullable: true, validators: [Validators.required] }),
+    categoryId: new FormControl<number | null>(null, { validators: [Validators.required] }),
+    statusId: new FormControl<number | null>(null, { validators: [Validators.required] }),
     description: new FormControl('', { nonNullable: true }),
   });
 
@@ -403,31 +404,68 @@ export class ResourcesPage implements OnInit {
       next: ({ resources, catalog }) => {
         this.resources.set(resources);
         this.catalog.set(catalog);
+        const disponible = catalog.resourceStatuses.find((s) => s.name === 'Disponible');
+        if (disponible && this.form.controls.statusId.value === null) {
+          this.form.patchValue({ statusId: disponible.id });
+        }
       },
+      error: () => this.showFeedback('error', 'No se pudieron cargar los recursos.'),
     });
   }
 
   submitResource(): void {
     if (!this.auth.isAdmin()) return;
-    if (this.form.invalid) return;
+    const { name, marca, categoryId, statusId, description } = this.form.getRawValue();
+    if (this.form.invalid || categoryId === null || statusId === null) {
+      this.form.markAllAsTouched();
+      this.showFeedback('error', 'Completá nombre, categoría y estado.');
+      return;
+    }
 
-    const payload = this.form.getRawValue();
     this.loading.set(true);
-
-    this.auth.createResource({
-      name: payload.name,
-      categoryId: payload.categoryId ?? 1,
-      statusId: payload.statusId,
-      marca: payload.marca,
-      description: payload.description,
-    }).subscribe({
+    this.auth.createResource({ name, categoryId, statusId, marca, description }).subscribe({
       next: () => {
-        this.form.reset({ name: '', marca: '', categoryId: null, statusId: 1, description: '' });
+        this.form.reset({ name: '', marca: '', categoryId: null, statusId, description: '' });
+        this.showFeedback('success', 'Recurso creado.');
         this.load();
       },
+      error: (err) => {
+        this.loading.set(false);
+        this.showFeedback('error', err?.error?.message ?? 'No se pudo crear el recurso.');
+      },
       complete: () => this.loading.set(false),
-      error: () => this.loading.set(false),
     });
+  }
+
+  changeStatus(resource: Resource, event: Event): void {
+    const statusId = Number((event.target as HTMLSelectElement).value);
+    this.auth.updateResource(resource.id, { statusId }).subscribe({
+      next: () => {
+        this.showFeedback('success', `Estado de "${resource.name}" actualizado.`);
+        this.load();
+      },
+      error: (err) => {
+        this.showFeedback('error', err?.error?.message ?? 'No se pudo cambiar el estado.');
+        this.load();
+      },
+    });
+  }
+
+  remove(resource: Resource): void {
+    if (!confirm(`¿Eliminar "${resource.name}"?`)) return;
+    this.auth.deleteResource(resource.id).subscribe({
+      next: () => {
+        this.showFeedback('success', 'Recurso eliminado.');
+        this.load();
+      },
+      error: (err) =>
+        this.showFeedback('error', err?.error?.message ?? 'No se pudo eliminar el recurso.'),
+    });
+  }
+
+  private showFeedback(type: 'success' | 'error', message: string): void {
+    this.feedbackType.set(type);
+    this.feedback.set(message);
   }
 }
 
@@ -450,7 +488,6 @@ export class ResourcesPage implements OnInit {
           <p class="form-subtitle">Seleccioná fecha, horario y los recursos que necesitás apartar.</p>
         </div>
 
-        <!-- Campos de fecha y hora con bordes bien definidos y redondeados -->
         <div class="form-grid datetime-grid">
           <label class="datetime-field">
             <span class="field-title">📅 Fecha y hora de inicio</span>
@@ -475,7 +512,7 @@ export class ResourcesPage implements OnInit {
         <div class="resources-selector-section">
           <span class="field-title">Recursos disponibles para reservar</span>
           <div class="checkbox-cards-group" aria-label="Seleccion de recursos disponibles">
-            @for (resource of resources(); track resource.id) {
+            @for (resource of availableResources(); track resource.id) {
               <label class="resource-checkbox-card" [class.selected]="selectedResourceIds().includes(resource.id)">
                 <input
                   type="checkbox"
@@ -498,7 +535,12 @@ export class ResourcesPage implements OnInit {
           </div>
         }
 
-        <button type="submit" class="submit-action-btn" aria-label="Reservar los recursos seleccionados" [disabled]="saving() || selectedResourceIds().length === 0 || resources().length === 0">
+        <button
+          type="submit"
+          class="submit-action-btn"
+          aria-label="Reservar los recursos seleccionados"
+          [disabled]="saving() || selectedResourceIds().length === 0 || availableResources().length === 0"
+        >
           @if (saving()) { Creando reserva... } @else { Confirmar y reservar recursos }
         </button>
       </form>
@@ -506,19 +548,17 @@ export class ResourcesPage implements OnInit {
       <div class="list-panel">
         <div class="list-panel-header">
           <div>
-            <h3>Mis reservas</h3>
+            <h3>{{ auth.isAdmin() ? 'Todas las reservas' : 'Mis reservas' }}</h3>
             <p class="panel-subtitle">Historial de solicitudes y estado de recursos</p>
           </div>
           <span class="count-badge">{{ reservations().length }} registradas</span>
         </div>
 
         @if (reservations().length === 0) {
-          <p class="empty-text">No tenés reservas creadas en este momento.</p>
+          <p class="empty-text">No hay reservas creadas en este momento.</p>
         } @else {
-          <!-- Avisos de mis reservas distribuidos tipo tarjetas de presentación -->
           <div class="reservation-cards-grid">
             @for (reservation of reservations(); track reservation.id) {
-              <!-- Si el recurso está ocupado, la tarjeta es de color rojo -->
               <article class="reservation-card presentation-style" [class.card-occupied]="isOccupied(reservation)">
                 @if (isOccupied(reservation)) {
                   <div class="occupied-banner">
@@ -551,6 +591,18 @@ export class ResourcesPage implements OnInit {
                 <div class="card-meta">
                   {{ reservation.resources.length }} recurso(s) asignado(s)
                 </div>
+
+                <div class="card-actions">
+                  @if (canCancel(reservation)) {
+                    <button type="button" (click)="cancel(reservation.id)">Cancelar</button>
+                  }
+                  @if (auth.isAdmin() && reservation.status.name === 'Pendiente') {
+                    <button type="button" (click)="changeStatus(reservation.id, 'Aprobada')">Aprobar</button>
+                  }
+                  @if (auth.isAdmin() && reservation.status.name === 'Aprobada') {
+                    <button type="button" (click)="changeStatus(reservation.id, 'Finalizada')">Finalizar</button>
+                  }
+                </div>
               </article>
             }
           </div>
@@ -567,6 +619,15 @@ export class ReservationsPage implements OnInit {
   readonly selectedResourceIds = signal<number[]>([]);
   readonly feedback = signal('');
   readonly feedbackType = signal<'success' | 'error'>('success');
+
+  readonly availableResources = computed(() =>
+    this.resources().filter((r) => r.status?.name === 'Disponible'),
+  );
+
+  protected readonly formatDate = formatDate;
+  protected readonly getReservationItems = getReservationItems;
+  protected readonly isOccupied = isOccupied;
+  protected readonly canCancel = canCancel;
 
   readonly form = new FormGroup({
     startDate: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -596,14 +657,12 @@ export class ReservationsPage implements OnInit {
     } else {
       next.add(id);
     }
-
     this.selectedResourceIds.set([...next]);
   }
 
   submitReservation(): void {
     if (this.form.invalid || this.selectedResourceIds().length === 0) {
-      this.feedbackType.set('error');
-      this.feedback.set('Seleccioná al menos un recurso y completá las fechas de la reserva.');
+      this.showFeedback('error', 'Seleccioná al menos un recurso y completá las fechas de la reserva.');
       return;
     }
 
@@ -611,51 +670,53 @@ export class ReservationsPage implements OnInit {
     this.saving.set(true);
     this.feedback.set('');
 
-    this.auth.createReservation({
-      resourceIds: this.selectedResourceIds(),
-      startDate: new Date(startDate).toISOString(),
-      endDate: new Date(endDate).toISOString(),
-    }).subscribe({
+    this.auth
+      .createReservation({
+        resourceIds: this.selectedResourceIds(),
+        startDate: new Date(startDate).toISOString(),
+        endDate: new Date(endDate).toISOString(),
+      })
+      .subscribe({
+        next: () => {
+          this.form.reset();
+          this.selectedResourceIds.set([]);
+          this.showFeedback('success', 'Reserva creada correctamente.');
+          this.load();
+        },
+        error: (err) => {
+          this.saving.set(false);
+          this.showFeedback(
+            'error',
+            err?.error?.message ?? 'No se pudo crear la reserva. Revisá disponibilidad y fechas.',
+          );
+        },
+        complete: () => this.saving.set(false),
+      });
+  }
+
+  cancel(id: number): void {
+    if (!confirm('¿Cancelar esta reserva?')) return;
+    this.auth.cancelReservation(id).subscribe({
       next: () => {
-        this.form.reset();
-        this.selectedResourceIds.set([]);
-        this.feedbackType.set('success');
-        this.feedback.set('Reserva creada correctamente.');
+        this.showFeedback('success', 'Reserva cancelada.');
         this.load();
       },
-      error: (err) => {
-        this.feedbackType.set('error');
-        this.feedback.set(err?.error?.message ?? 'No se pudo crear la reserva. Revisá disponibilidad y fechas.');
-      },
-      complete: () => this.saving.set(false),
+      error: (err) => this.showFeedback('error', err?.error?.message ?? 'No se pudo cancelar la reserva.'),
     });
   }
 
-  protected formatDate(value: string): string {
-    return new Date(value).toLocaleString('es-AR', { dateStyle: 'medium', timeStyle: 'short' });
+  changeStatus(id: number, status: 'Aprobada' | 'Finalizada'): void {
+    this.auth.updateReservationStatus(id, status).subscribe({
+      next: () => {
+        this.showFeedback('success', `Reserva ${status.toLowerCase()}.`);
+        this.load();
+      },
+      error: (err) => this.showFeedback('error', err?.error?.message ?? 'No se pudo cambiar el estado.'),
+    });
   }
 
-  protected getReservationItems(reservation: Reservation): string {
-    return reservation.resources?.map((item) => item.resource?.name ?? 'Sin nombre').join(', ') || 'Sin elementos';
-  }
-
-  protected isOccupied(reservation: Reservation): boolean {
-    const status = (reservation.status?.name ?? '').toLowerCase();
-    if (status.includes('ocupad') || status.includes('curso') || status.includes('aprobada')) {
-      return true;
-    }
-    const now = Date.now();
-    const start = new Date(reservation.startDate).getTime();
-    const end = new Date(reservation.endDate).getTime();
-    if (!isNaN(start) && !isNaN(end) && now >= start && now <= end && status !== 'cancelada' && status !== 'finalizada') {
-      return true;
-    }
-    return (
-      reservation.resources?.some((r) => {
-        const rStatus = (r.resource?.status?.name ?? '').toLowerCase();
-        return rStatus.includes('ocupad') || rStatus.includes('mantenimiento') || rStatus.includes('fuera');
-      }) ?? false
-    );
+  private showFeedback(type: 'success' | 'error', message: string): void {
+    this.feedbackType.set(type);
+    this.feedback.set(message);
   }
 }
-

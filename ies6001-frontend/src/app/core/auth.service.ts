@@ -1,5 +1,8 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { tap } from 'rxjs';
+import { API_URL } from './api.config';
 
 export interface AuthUser {
   id: number;
@@ -62,8 +65,7 @@ export interface ReservationCreateInput {
 
 export interface ResourceCreateInput {
   name: string;
-  categoriaId?: number;
-  categoryId?: number;
+  categoryId: number;
   statusId: number;
   marca?: string;
   description?: string;
@@ -72,6 +74,7 @@ export interface ResourceCreateInput {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
   private readonly storage = typeof localStorage !== 'undefined' ? localStorage : null;
 
   private readonly _user = signal<AuthUser | null>(this.readUser());
@@ -79,19 +82,16 @@ export class AuthService {
   readonly isLoggedIn = computed(() => this._user() !== null);
   readonly isAdmin = computed(() => this._user()?.role === 'ADMIN');
 
-  readonly baseUrl = 'http://localhost:3000';
+  readonly baseUrl = API_URL;
 
   get token(): string | null {
     return this.storage?.getItem('token') ?? null;
   }
 
-  getAuthHeaders(): HttpHeaders {
-    const token = this.token;
-    return new HttpHeaders(token ? { Authorization: `Bearer ${token}` } : {});
-  }
-
   login(payload: LoginRequest) {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/login`, payload);
+    return this.http
+      .post<AuthResponse>(`${this.baseUrl}/auth/login`, payload)
+      .pipe(tap((res) => this.setSession(res)));
   }
 
   setSession(response: AuthResponse) {
@@ -104,44 +104,41 @@ export class AuthService {
     this.storage?.removeItem('token');
     this.storage?.removeItem('user');
     this._user.set(null);
+    this.router.navigate(['/login']);
   }
 
   getResources() {
-    return this.http.get<Resource[]>(`${this.baseUrl}/resources`, {
-      headers: this.getAuthHeaders(),
-    });
+    return this.http.get<Resource[]>(`${this.baseUrl}/resources`);
   }
 
   getCatalogs() {
-    return this.http.get<CatalogsResponse>(`${this.baseUrl}/catalogs`, {
-      headers: this.getAuthHeaders(),
-    });
+    return this.http.get<CatalogsResponse>(`${this.baseUrl}/catalogs`);
   }
 
   getReservations() {
-    return this.http.get<Reservation[]>(`${this.baseUrl}/reservations`, {
-      headers: this.getAuthHeaders(),
-    });
+    return this.http.get<Reservation[]>(`${this.baseUrl}/reservations`);
   }
 
   createReservation(payload: ReservationCreateInput) {
-    return this.http.post<Reservation>(`${this.baseUrl}/reservations`, payload, {
-      headers: this.getAuthHeaders(),
-    });
+    return this.http.post<Reservation>(`${this.baseUrl}/reservations`, payload);
   }
+updateResource(id: number, payload: Partial<ResourceCreateInput>) {
+  return this.http.patch<Resource>(`${this.baseUrl}/resources/${id}`, payload);
+}
 
+deleteResource(id: number) {
+  return this.http.delete<Resource>(`${this.baseUrl}/resources/${id}`);
+}
   createResource(payload: ResourceCreateInput) {
-    return this.http.post<Resource>(`${this.baseUrl}/resources`, payload, {
-      headers: this.getAuthHeaders(),
-    });
+    return this.http.post<Resource>(`${this.baseUrl}/resources`, payload);
   }
 
-  updateReservationStatus(id: number, status: string) {
-    return this.http.patch<Reservation>(
-      `${this.baseUrl}/reservations/${id}/status`,
-      { status },
-      { headers: this.getAuthHeaders() },
-    );
+  updateReservationStatus(id: number, status: 'Aprobada' | 'Finalizada') {
+    return this.http.patch<Reservation>(`${this.baseUrl}/reservations/${id}/status`, { status });
+  }
+
+  cancelReservation(id: number) {
+    return this.http.patch<Reservation>(`${this.baseUrl}/reservations/${id}/cancel`, {});
   }
 
   private readUser(): AuthUser | null {

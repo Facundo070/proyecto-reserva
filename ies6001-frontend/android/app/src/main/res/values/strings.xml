@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Reserva.app</string>
+    <string name="title_activity_main">Reserva.app</string>
+    <string name="package_name">com.ies6001.reserva</string>
+    <string name="custom_url_scheme">com.ies6001.reserva</string>
+</resources>
