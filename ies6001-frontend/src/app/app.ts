@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { AuthService, CatalogsResponse, Reservation, Resource } from './core/auth.service';
 import { canCancel, formatDate, getReservationItems, isOccupied } from './core/reservation.utils';
 
@@ -16,12 +16,15 @@ import { canCancel, formatDate, getReservationItems, isOccupied } from './core/r
 export class App {
   protected readonly auth = inject(AuthService);
   protected readonly router = inject(Router);
-  protected readonly navItems = [
-  { label: 'Inicio', url: '/dashboard' },
-  { label: 'Recursos', url: '/resources' },
-  { label: 'Reservas', url: '/reservations' },
-  { label: 'Docentes', url: '/teachers' },
-  ];
+  protected readonly navItems = computed(() => {
+    const isAdmin = this.auth.isAdmin();
+    return [
+      { label: 'Inicio', url: '/dashboard' },
+      ...(isAdmin ? [{ label: 'Recursos', url: '/resources' }] : []),
+      { label: 'Reservas', url: '/reservations' },
+      ...(isAdmin ? [{ label: 'Docentes', url: '/teachers' }] : []),
+    ];
+  });
 
   protected readonly isLoggedIn = this.auth.isLoggedIn;
 
@@ -303,6 +306,7 @@ export class LoginPage {
               <span class="pcard-status">● Conectado actualmente</span>
             </div>
           </article>
+          @if (auth.isAdmin()) {
           <article class="presentation-stat-card card-docentes">
 
   <div class="pcard-top">
@@ -328,6 +332,7 @@ export class LoginPage {
   </div>
 
 </article>
+          }
         </div>
         
         <div class="list-panel">
@@ -338,6 +343,7 @@ export class LoginPage {
             </div>
             <span class="count-badge">{{ reservations().length }} registradas</span>
           </div>
+@if (auth.isAdmin()) {
 <section class="teachers-section">
   <h3>Docentes registrados</h3>
 
@@ -369,6 +375,7 @@ export class LoginPage {
 
   }
 </section>
+}
          @if (reservations().length === 0) {
   <div class="empty-state">
 
@@ -461,7 +468,7 @@ export class DashboardPage implements OnInit {
    forkJoin({
   resources: this.auth.getResources(),
   reservations: this.auth.getReservations(),
-  users: this.auth.getUsers(),
+  users: this.auth.isAdmin() ? this.auth.getUsers() : of([]),
 }).subscribe({
   next: ({ resources, reservations, users }) => {
     
