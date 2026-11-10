@@ -37,39 +37,128 @@ export class App {
   template: `
     <section class="auth-shell">
       <div class="auth-card">
-        <div class="auth-header">
-          <div class="auth-brand-badge">
-            <span class="brand-letter">I</span>
-            <span>IES 6001</span>
-          </div>
-          <h1>Acceso al sistema</h1>
-          <p>Ingresá tus credenciales para gestionar recursos y reservas institucionales.</p>
-        </div>
+        <div class="portal-header">
+  <span>Portal de Gestión Institucional</span>
+
+  <span class="status-online">
+    ● Sistema en línea
+  </span>
+</div>
+
+<div class="auth-header">
+  <div class="auth-brand-badge">
+    <span class="brand-letter">I</span>
+    <span>IES 6001</span>
+  </div>
+
+  <h1>Acceso al sistema</h1>
+
+<p class="institution-name">
+  Sistema de Gestión y Reserva de Recursos
+</p>
+
+<p>
+  Ingresá tus credenciales para gestionar recursos y reservas institucionales.
+</p>
+</div>
+
+<div class="role-selector">
+  <button
+    type="button"
+    class="role-btn"
+    [class.active]="selectedRole() === 'DOCENTE'"
+    (click)="selectedRole.set('DOCENTE')"
+  >
+    Docente
+  </button>
+
+  <button
+    type="button"
+    class="role-btn"
+    [class.active]="selectedRole() === 'ADMIN'"
+    (click)="selectedRole.set('ADMIN')"
+  >
+    Administrador
+  </button>
+</div>
+
+
+<div class="login-info">
+
+  @if (selectedRole() === 'DOCENTE') {
+
+    <strong>📚 Docente</strong>
+
+    <ul>
+      <li>Reservar recursos institucionales</li>
+      <li>Consultar disponibilidad</li>
+      <li>Gestionar solicitudes realizadas</li>
+    </ul>
+
+  } @else {
+
+    <strong>🛠️ Administrador</strong>
+
+    <ul>
+      <li>Gestionar recursos</li>
+      <li>Aprobar reservas</li>
+      <li>Administrar usuarios</li>
+    </ul>
+
+  }
+
+</div>
+
 
         <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
           <label class="form-field-group">
             <span class="field-label">Correo electrónico</span>
-            <div class="input-wrap">
-              <input
-                formControlName="email"
-                type="email"
-                placeholder="correo@ejemplo.com"
-                class="form-input rounded-input"
-              />
-            </div>
+            <div class="input-wrap icon-input">
+  
+
+  <input
+    formControlName="email"
+    type="email"
+    placeholder="correo@ejemplo.com"
+    class="form-input rounded-input"
+  />
+</div>
           </label>
 
           <label class="form-field-group">
             <span class="field-label">Contraseña</span>
             <div class="input-wrap">
-              <input
-                formControlName="password"
-                type="password"
-                placeholder="••••••••"
-                class="form-input rounded-input"
-              />
+             <div class="password-wrapper">
+             
+  <input
+    formControlName="password"
+    [type]="showPassword() ? 'text' : 'password'"
+    placeholder="••••••••"
+    class="form-input rounded-input"
+  />
+
+  <button
+    type="button"
+    class="toggle-password-btn"
+    (click)="showPassword.set(!showPassword())"
+  >
+    {{ showPassword() ? 'Ocultar' : 'Mostrar' }}
+  </button>
+</div>
             </div>
           </label>
+
+<div class="remember-row">
+  <label class="remember-label">
+    <input type="checkbox" />
+    <span>Recordar sesión</span>
+  </label>
+
+  <a href="#" class="forgot-link">
+    ¿Olvidó su contraseña?
+  </a>
+</div>
+
 
           @if (error()) {
             <div class="alert error">{{ error() }}</div>
@@ -83,6 +172,16 @@ export class App {
             }
           </button>
         </form>
+        <div class="support-box">
+  <div>
+    <strong>¿Problemas para ingresar?</strong>
+    <small>Contacte con soporte técnico institucional.</small>
+  </div>
+
+  <a href="#" class="support-link">
+    Soporte TI →
+  </a>
+</div>
       </div>
     </section>
   `,
@@ -98,6 +197,8 @@ export class LoginPage {
 
   readonly error = signal<string>('');
   readonly loading = signal(false);
+  readonly showPassword = signal(false);
+  readonly selectedRole = signal<'DOCENTE' | 'ADMIN'>('DOCENTE');
 
   submit(): void {
     if (this.form.invalid) {
@@ -130,11 +231,22 @@ export class LoginPage {
   template: `
     <section class="page-panel">
       <div class="page-header">
-        <div>
-          <p class="eyebrow">Resumen Institucional</p>
-          <h2>Panel principal</h2>
-        </div>
-      </div>
+
+  <div>
+    <p class="eyebrow">Resumen Institucional</p>
+
+    <h2>Panel principal</h2>
+
+    <p class="dashboard-subtitle">
+      Bienvenido, {{ auth.user()?.name }}
+    </p>
+  </div>
+
+  <button class="dashboard-action-btn">
+    + Nueva Reserva
+  </button>
+
+</div>
 
       @if (loading()) {
         <div class="loading-state">
@@ -177,6 +289,7 @@ export class LoginPage {
 
           <!-- Tarjeta de presentación: Usuario -->
           <article class="presentation-stat-card card-usuario">
+            
             <div class="pcard-top">
               <span class="pcard-chip">Sesión Activa</span>
               <span class="pcard-icon">👤</span>
@@ -190,8 +303,33 @@ export class LoginPage {
               <span class="pcard-status">● Conectado actualmente</span>
             </div>
           </article>
-        </div>
+          <article class="presentation-stat-card card-docentes">
 
+  <div class="pcard-top">
+    <span class="pcard-chip">Docentes</span>
+    <span class="pcard-icon">👨‍🏫</span>
+  </div>
+
+  <div class="pcard-metric">
+    <span class="pcard-title">Docentes</span>
+    <strong class="pcard-number">
+      {{ teachersCount() }}
+    </strong>
+  </div>
+
+  <p class="pcard-desc">
+    Profesores registrados en el sistema
+  </p>
+
+  <div class="pcard-bottom">
+    <span class="pcard-status">
+      ● Usuarios activos
+    </span>
+  </div>
+
+</article>
+        </div>
+        
         <div class="list-panel">
           <div class="list-panel-header">
             <div>
@@ -201,9 +339,29 @@ export class LoginPage {
             <span class="count-badge">{{ reservations().length }} registradas</span>
           </div>
 
-          @if (reservations().length === 0) {
-            <p class="empty-text">No hay reservas registradas en el sistema.</p>
-          } @else {
+         @if (reservations().length === 0) {
+  <div class="empty-state">
+
+    <div class="empty-icon">
+      📅
+    </div>
+
+    <h4>Sin reservas registradas</h4>
+
+    <p>
+      Todavía no existen reservas en el sistema.
+    </p>
+
+    <button
+      class="empty-action-btn"
+      (click)="router.navigateByUrl('/reservations')"
+    >
+      Crear primera reserva
+    </button>
+
+  </div>
+}
+ @else {
             <div class="reservation-cards-grid">
               @for (reservation of reservations(); track reservation.id) {
                 <!-- Tarjeta con estilo de color rojo si el recurso está ocupado -->
@@ -253,10 +411,15 @@ export class DashboardPage implements OnInit {
   readonly loading = signal(true);
   readonly resources = signal<Resource[]>([]);
   readonly reservations = signal<Reservation[]>([]);
+  readonly users = signal<any[]>([]);
+  readonly teachersCount = computed(() => this.users().length);
+
+
 
   protected readonly formatDate = formatDate;
   protected readonly getReservationItems = getReservationItems;
   protected readonly isOccupied = isOccupied;
+  protected readonly router = inject(Router);
 
   ngOnInit(): void {
     this.load();
@@ -265,17 +428,24 @@ export class DashboardPage implements OnInit {
   private load(): void {
     this.loading.set(true);
 
-    forkJoin({
-      resources: this.auth.getResources(),
-      reservations: this.auth.getReservations(),
-    }).subscribe({
-      next: ({ resources, reservations }) => {
-        this.resources.set(resources);
-        this.reservations.set(reservations);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
+   forkJoin({
+  resources: this.auth.getResources(),
+  reservations: this.auth.getReservations(),
+  users: this.auth.getUsers(),
+}).subscribe({
+  next: ({ resources, reservations, users }) => {
+    
+    this.resources.set(resources);
+    this.reservations.set(reservations);
+    this.users.set(users);
+    this.loading.set(false);
+  },
+
+  error: (err) => {
+    console.error('ERROR USERS', err);
+    this.loading.set(false);
+  },
+});
   }
 }
 @Component({
