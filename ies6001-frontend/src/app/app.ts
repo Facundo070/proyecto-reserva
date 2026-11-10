@@ -17,9 +17,10 @@ export class App {
   protected readonly auth = inject(AuthService);
   protected readonly router = inject(Router);
   protected readonly navItems = [
-    { label: 'Inicio', url: '/dashboard' },
-    { label: 'Recursos', url: '/resources' },
-    { label: 'Reservas', url: '/reservations' },
+  { label: 'Inicio', url: '/dashboard' },
+  { label: 'Recursos', url: '/resources' },
+  { label: 'Reservas', url: '/reservations' },
+  { label: 'Docentes', url: '/teachers' },
   ];
 
   protected readonly isLoggedIn = this.auth.isLoggedIn;
@@ -174,13 +175,12 @@ export class App {
         </form>
         <div class="support-box">
   <div>
-    <strong>¿Problemas para ingresar?</strong>
-    <small>Contacte con soporte técnico institucional.</small>
+    
+    
   </div>
 
-  <a href="#" class="support-link">
-    Soporte TI →
-  </a>
+  
+
 </div>
       </div>
     </section>
@@ -338,7 +338,37 @@ export class LoginPage {
             </div>
             <span class="count-badge">{{ reservations().length }} registradas</span>
           </div>
+<section class="teachers-section">
+  <h3>Docentes registrados</h3>
 
+  @if (users().length === 0) {
+
+    <p>No hay docentes registrados.</p>
+
+  } @else {
+
+    <div class="teachers-list">
+
+      @for (user of users(); track user.user.id) {
+
+        <article class="teacher-card">
+          <strong>{{ user.user.name }}</strong>
+
+          <p>
+            {{ user.person.email }}
+          </p>
+
+          <small>
+            Rol: {{ user.user.role }}
+          </small>
+        </article>
+
+      }
+
+    </div>
+
+  }
+</section>
          @if (reservations().length === 0) {
   <div class="empty-state">
 
@@ -882,6 +912,202 @@ export class ReservationsPage implements OnInit {
         this.load();
       },
       error: (err) => this.showFeedback('error', err?.error?.message ?? 'No se pudo cambiar el estado.'),
+    });
+  }
+
+  private showFeedback(type: 'success' | 'error', message: string): void {
+    this.feedbackType.set(type);
+    this.feedback.set(message);
+  }
+}
+@Component({
+  selector: 'app-teachers-page',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  template: `
+    <section class="page-panel">
+      <div class="page-header">
+        <div>
+          <p class="eyebrow">Gestión</p>
+          <h2>Docentes</h2>
+        </div>
+      </div>
+
+      <button
+  class="teacher-create-btn"
+  (click)="toggleForm()"
+>
+  + Nuevo docente
+</button>
+      @if (feedback()) {
+        <div class="alert" [class.success]="feedbackType() === 'success'" [class.error]="feedbackType() === 'error'">
+          {{ feedback() }}
+        </div>
+      }
+@if (showForm()) {
+
+  <div class="list-panel">
+    <h3>Nuevo docente</h3>
+<form
+  class="resource-form"
+  [formGroup]="form"
+  (ngSubmit)="submitTeacher()">
+
+  <div class="form-grid">
+
+    <label>
+      <span>Nombre</span>
+      <input
+  type="text"
+  formControlName="firstName"
+/>
+    </label>
+
+    <label>
+      <span>Apellido</span>
+      <input
+  type="text"
+  formControlName="lastName"
+/>
+    </label>
+
+    <label>
+      <span>DNI</span>
+      <input
+  type="text"
+  formControlName="dni"
+/>
+
+    </label>
+
+    <label>
+      <span>Email</span>
+<input
+  type="email"
+  formControlName="email"
+/>    </label>
+
+    <label>
+      <span>Contraseña</span>
+      <input
+  type="password"
+  formControlName="password"
+/>
+    </label>
+
+  </div>
+
+  <button type="submit">
+    Crear docente
+  </button>
+
+</form>
+  </div>
+
+}
+
+      <div class="list-panel">
+  <h3>Docentes registrados</h3>
+
+  <p>
+    Total: {{ teachers().length }}
+  </p>
+
+  @for (teacher of teachers(); track teacher.user.id) {
+
+    <article class="teacher-card">
+
+      <strong>
+        {{ teacher.user.name }}
+      </strong>
+
+      <p>
+        {{ teacher.person.email }}
+      </p>
+
+      <small>
+        Rol: {{ teacher.user.role }}
+      </small>
+
+    </article>
+
+  }
+</div>
+
+    </section>
+  `,
+})
+export class TeachersPage implements OnInit {
+  protected readonly auth = inject(AuthService);
+
+  readonly teachers = signal<any[]>([]);
+  readonly showForm = signal(false);
+  readonly feedback = signal('');
+  readonly feedbackType = signal<'success' | 'error'>('success');
+
+  readonly form = new FormGroup({
+    firstName: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+
+    lastName: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+
+    dni: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+
+    email: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.email],
+    }),
+
+    password: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+  });
+
+  toggleForm(): void {
+    this.showForm.update(value => !value);
+  }
+
+  submitTeacher(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const { firstName, lastName, dni, email, password } = this.form.getRawValue();
+    this.auth.createUser({ firstName, lastName, dni, email, password }).subscribe({
+      next: () => {
+        this.loadTeachers();
+        this.form.reset();
+        this.showForm.set(false);
+        this.showFeedback('success', 'Docente creado correctamente.');
+      },
+      error: (err) =>
+        this.showFeedback('error', err?.error?.message ?? 'No se pudo crear el docente.'),
+    });
+  }
+
+  ngOnInit(): void {
+    this.loadTeachers();
+  }
+
+  private loadTeachers(): void {
+    this.auth.getUsers().subscribe({
+      next: (users) => {
+        this.teachers.set(
+          users.filter(user => user.user.role === 'DOCENTE')
+        );
+      },
+      error: (err) =>
+        this.showFeedback('error', err?.error?.message ?? 'No se pudieron cargar los docentes.'),
     });
   }
 
