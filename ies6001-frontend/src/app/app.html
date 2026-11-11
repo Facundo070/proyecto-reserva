@@ -9,7 +9,7 @@
     </div>
 
     <nav class="main-nav" aria-label="Navegación principal">
-      @for (item of navItems; track item.url) {
+      @for (item of navItems(); track item.url) {
         <a [routerLink]="item.url" routerLinkActive="active">{{ item.label }}</a>
       }
     </nav>
