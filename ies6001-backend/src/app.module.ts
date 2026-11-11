@@ -6,14 +6,12 @@ import { UsersModule } from './users/users.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { ReservationsModule } from './reservations/reservations.module.js';
 import { ResourcesModule } from './resources/resources.module.js';
-import { CatalogsModule } from './catalogs/catalogs.module.js';
 
 @Module({
   imports: [
     PrismaModule,
     UsersModule,
     AuthModule,
-    CatalogsModule,
     ResourcesModule,
     ReservationsModule,
   ],
