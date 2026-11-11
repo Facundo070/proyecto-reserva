@@ -129,6 +129,15 @@ updateResource(id: number, payload: Partial<ResourceCreateInput>) {
 deleteResource(id: number) {
   return this.http.delete<Resource>(`${this.baseUrl}/resources/${id}`);
 }
+createUser(data: {
+  firstName: string;
+  lastName: string;
+  dni: string;
+  email: string;
+  password: string;
+}) {
+  return this.http.post(`${this.baseUrl}/users`, data);
+}
   createResource(payload: ResourceCreateInput) {
     return this.http.post<Resource>(`${this.baseUrl}/resources`, payload);
   }
