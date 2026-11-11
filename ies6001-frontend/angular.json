@@ -28,14 +28,13 @@
             "styles": [
               "src/styles.css"
             ],
+            "server": "src/main.server.ts",
+            "outputMode": "server",
             "security": {
-              "allowedHosts": [
-                "localhost",
-                "127.0.0.1",
-                "0.0.0.0",
-                "[::1]",
-                ".trycloudflare.com"
-              ]
+              "allowedHosts": []
+            },
+            "ssr": {
+              "entry": "src/server.ts"
             }
           },
           "configurations": {
@@ -62,22 +61,18 @@
           },
           "defaultConfiguration": "production"
         },
-"serve": {
-  "builder": "@angular/build:dev-server",
-  "options": {
-    "proxyConfig": "proxy.conf.json",
-    "allowedHosts": [".trycloudflare.com"]
-  },
-  "configurations": {
-    "production": {
-      "buildTarget": "ies6001-frontend:build:production"
-    },
-    "development": {
-      "buildTarget": "ies6001-frontend:build:development"
-    }
-  },
-  "defaultConfiguration": "development"
-},
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "ies6001-frontend:build:production"
+            },
+            "development": {
+              "buildTarget": "ies6001-frontend:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
         "test": {
           "builder": "@angular/build:unit-test"
         }

@@ -6,24 +6,9 @@ import { CatalogsService } from './catalogs.service.js';
 @ApiTags('catalogs')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Controller('catalogs')
+@Controller()
 export class CatalogsController {
   constructor(private readonly catalogsService: CatalogsService) {}
-
-  @Get()
-  async findAll() {
-    const [categories, resourceStatuses, reservationStatuses] = await Promise.all([
-      this.catalogsService.categories(),
-      this.catalogsService.resourceStatuses(),
-      this.catalogsService.reservationStatuses(),
-    ]);
-
-    return {
-      categories,
-      resourceStatuses,
-      reservationStatuses,
-    };
-  }
 
   @Get('categories')
   categories() {
