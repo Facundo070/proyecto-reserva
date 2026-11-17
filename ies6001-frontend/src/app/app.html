@@ -1,21 +1,49 @@
 ﻿@if (isLoggedIn()) {
-  <header class="topbar">
-    <div class="brand-wrap">
-      <span class="brand-mark">I</span>
-      <div>
-        <strong>IES 6001</strong>
-        <small>Reservas</small>
-      </div>
+
+<header class="topbar">
+
+  <div class="brand-wrap">
+    <span class="brand-mark">I</span>
+
+    <div>
+      <strong>IES 6001</strong>
+      <small>Reservas</small>
     </div>
+  </div>
 
-    <nav class="main-nav" aria-label="Navegación principal">
-      @for (item of navItems(); track item.url) {
-        <a [routerLink]="item.url" routerLinkActive="active">{{ item.label }}</a>
-      }
-    </nav>
+  <button
+    class="menu-toggle"
+    type="button"
+    (click)="toggleMenu()">
+    ☰
+  </button>
 
-    <button type="button" class="logout-btn" (click)="logout()">Cerrar sesión</button>
-  </header>
+  <nav
+    class="main-nav"
+    [class.mobile-open]="menuOpen()">
+
+    @for (item of navItems(); track item.url) {
+      <a
+        [routerLink]="item.url"
+        routerLinkActive="active"
+        (click)="closeMenu()">
+
+        {{ item.label }}
+      </a>
+    }
+
+    <button
+      type="button"
+      class="logout-btn"
+      (click)="logout()">
+
+      Cerrar sesión
+    </button>
+
+  </nav>
+
+</header>
+
 }
 
 <main class="app-shell">

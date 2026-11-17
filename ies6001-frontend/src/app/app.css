@@ -1257,3 +1257,73 @@ textarea {
   cursor: pointer;
   margin-bottom: 1rem;
 }
+/* ===== Vista celular ===== */
+@media (max-width: 768px) {
+  body {
+    font-size: 15px;
+  }
+
+  /* Paneles y formularios: menos relleno, sin tarjetas anidadas pesadas */
+  .page-panel {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .resource-form,
+  .list-panel {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  /* Formularios en una sola columna */
+  .form-grid,
+  .datetime-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Campos cómodos de tocar; 16px evita el zoom automático en el celular */
+  .resource-form input,
+  .resource-form select,
+  .resource-form textarea,
+  .datetime-input-defined {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  /* Tarjetas de reservas y de resumen: una por fila */
+  .reservation-cards-grid,
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .date-range {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .arrow-sep {
+    display: none;
+  }
+
+  /* Botones de acción por reserva */
+  .card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .card-actions button {
+    flex: 1 1 auto;
+    min-height: 40px;
+  }
+
+  /* Botón principal de enviar ocupa todo el ancho */
+  .submit-action-btn {
+    width: 100%;
+    min-height: 46px;
+  }
+}

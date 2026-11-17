@@ -16,8 +16,10 @@ import { canCancel, formatDate, getReservationItems, isOccupied } from './core/r
 export class App {
   protected readonly auth = inject(AuthService);
   protected readonly router = inject(Router);
+
   protected readonly navItems = computed(() => {
     const isAdmin = this.auth.isAdmin();
+
     return [
       { label: 'Inicio', url: '/dashboard' },
       ...(isAdmin ? [{ label: 'Recursos', url: '/resources' }] : []),
@@ -26,14 +28,23 @@ export class App {
     ];
   });
 
+  protected readonly menuOpen = signal(false);
+
   protected readonly isLoggedIn = this.auth.isLoggedIn;
+
+  toggleMenu(): void {
+    this.menuOpen.update(value => !value);
+  }
+
+  closeMenu(): void {
+    this.menuOpen.set(false);
+  }
 
   logout(): void {
     this.auth.logout();
     this.router.navigateByUrl('/login');
   }
 }
-
 @Component({
   selector: 'app-login-page',
   standalone: true,
