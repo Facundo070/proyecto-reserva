@@ -56,6 +56,7 @@ textarea {
   display: flex;
   align-items: center;
   gap: 0.85rem;
+  text-decoration: none;
 }
 
 .brand-mark {
@@ -64,12 +65,13 @@ textarea {
   justify-content: center;
   width: 2.6rem;
   height: 2.6rem;
-  border-radius: 12px;
-  background: #ffffff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  color: #1d4ed8;
-  font-weight: 900;
-  font-size: 1.25rem;
+  flex: 0 0 auto;
+}
+
+.brand-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .brand-wrap strong {
@@ -179,17 +181,11 @@ textarea {
   margin-bottom: 0.9rem;
 }
 
-.brand-letter {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.4rem;
-  height: 1.4rem;
-  background: #2563eb;
-  color: #ffffff;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 900;
+.brand-logo {
+  display: block;
+  width: 1.6rem;
+  height: 1.6rem;
+  flex: 0 0 auto;
 }
 
 .auth-header h1 {

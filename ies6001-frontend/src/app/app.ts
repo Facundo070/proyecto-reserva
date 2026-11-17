@@ -62,8 +62,8 @@ export class App {
 
 <div class="auth-header">
   <div class="auth-brand-badge">
-    <span class="brand-letter">I</span>
-    <span>IES 6001</span>
+    <img class="brand-logo" src="/assets/resource-shield.svg" alt="" />
+    <span>Recursos-IES6001</span>
   </div>
 
   <h1>Acceso al sistema</h1>
